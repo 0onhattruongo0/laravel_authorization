@@ -10,22 +10,25 @@ use Illuminate\Support\Facades\Auth;
 
 class GroupsController extends Controller
 {
-    public function index(){
+    public function index()
+    {
 
         $user_id = Auth::user()->id;
-        if(Auth::user()->user_id == 0){
+        if (Auth::user()->user_id == 0) {
             $lists = Group::all();
-        }else{
-        $lists = Group::orderBy('created_at','desc')->where('user_id',$user_id)->get();
+        } else {
+            $lists = Group::orderBy('created_at', 'desc')->where('user_id', $user_id)->get();
         }
-        return view('admin.groups.lists',compact('lists'));
+        return view('admin.groups.lists', compact('lists'));
     }
 
-    public function add(){
+    public function add()
+    {
         return view('admin.groups.add');
     }
-    
-    public function postAdd(Request $request){
+
+    public function postAdd(Request $request)
+    {
         $request->validate(
             [
                 'name' => 'required|unique:groups,name',
@@ -40,19 +43,21 @@ class GroupsController extends Controller
         $group->name = $request->name;
         $group->user_id = Auth::user()->id;
         $group->save();
-        return redirect(route('admin.groups.index'))->with('msg','Thêm nhóm thành công');
+        return redirect(route('admin.groups.index'))->with('msg', 'Thêm nhóm thành công');
     }
 
-    public function edit(Group $group){
+    public function edit(Group $group)
+    {
         $this->authorize('update', $group);
-        return view('admin.groups.edit',compact('group'));
+        return view('admin.groups.edit', compact('group'));
     }
 
-    public function postEdit(Group $group, Request $request){
+    public function postEdit(Group $group, Request $request)
+    {
         $this->authorize('update', $group);
         $request->validate(
             [
-                'name' => 'required|unique:groups,name,'.$group->id,
+                'name' => 'required|unique:groups,name,' . $group->id,
             ],
             [
                 'name.required' => 'Tên nhóm bắt buộc phải nhập',
@@ -62,24 +67,26 @@ class GroupsController extends Controller
         $group->name = $request->name;
         $group->user_id = Auth::user()->id;
         $group->save();
-        return redirect(route('admin.groups.index'))->with('msg','Cập nhật thành công');
-    } 
-
-    public function delete(Group $group){
-        $this->authorize('delete', $group);
-        $usersCount = $group->user()->count(); 
-        if($usersCount == 0){
-            if(Auth::user()->group->id != $group->id){
-                Group::destroy($group->id);
-                return redirect(route('admin.groups.index'))->with('msg','Xóa nhóm thành công');
-            }
-            return redirect(route('admin.groups.index'))->with('error','Bạn không thể xóa nhóm này');
-        }
-       
-        return redirect(route('admin.groups.index'))->with('error','Trong nhóm vẫn còn '.$usersCount.' người dùng');
+        return redirect(route('admin.groups.index'))->with('msg', 'Cập nhật thành công');
     }
 
-    public function permission(Group $group){
+    public function delete(Group $group)
+    {
+        $this->authorize('delete', $group);
+        $usersCount = $group->user()->count();
+        if ($usersCount == 0) {
+            if (Auth::user()->group->id != $group->id) {
+                Group::destroy($group->id);
+                return redirect(route('admin.groups.index'))->with('msg', 'Xóa nhóm thành công');
+            }
+            return redirect(route('admin.groups.index'))->with('error', 'Bạn không thể xóa nhóm này');
+        }
+
+        return redirect(route('admin.groups.index'))->with('error', 'Trong nhóm vẫn còn ' . $usersCount . ' người dùng');
+    }
+
+    public function permission(Group $group)
+    {
         $this->authorize('permission', $group);
         $modules = Module::all();
         $roleListArr = [
@@ -89,28 +96,29 @@ class GroupsController extends Controller
             'delete' => 'Xóa'
         ];
 
-        $roleJson= $group->permissions;
+        $roleJson = $group->permissions;
 
-        if(!empty($roleJson)){
+        if (!empty($roleJson)) {
             $roleArr = json_decode($roleJson, true);
-        }else{
+        } else {
             $roleArr = [];
         }
         // dd($roleArr);
-        return view('admin.groups.permission',compact('group','modules','roleListArr','roleArr'));
+        return view('admin.groups.permission', compact('group', 'modules', 'roleListArr', 'roleArr'));
     }
 
-    public function postPermission(Group $group, Request $request){
+    public function postPermission(Group $group, Request $request)
+    {
         $this->authorize('permission', $group);
-        if(!empty($request->role)){
+        if (!empty($request->role)) {
             $roleList = $request->role;
-        }else{
-            $roleList= [];
+        } else {
+            $roleList = [];
         }
-        
+
         $roleListJson = json_encode($roleList);
         $group->permissions = $roleListJson;
         $group->save();
-        return back()->with('msg','Phân quyền thành công');
+        return back()->with('msg', 'Phân quyền thành công');
     }
 }

@@ -1,0 +1,3 @@
+có thể phân quyền ko dùng policy
+chỉ nên dùng khi có ràng buộc tài nguyên ví dụ như người nào tạo thì người đó mới đc phép xóa.
+và nên dùng authorize để thiết lập trong controller 
