@@ -36,7 +36,7 @@ class GroupPolicy
      */
     public function update(User $user, Group $group)
     {
-        return ($user->id == $group->user_id || $group->user_id == $user->user_id) ;
+        return ($user->id == $group->user_id || $group->user_id == $user->user_id);
     }
 
     /**

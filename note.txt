@@ -1,3 +1,14 @@
 có thể phân quyền ko dùng policy
 chỉ nên dùng khi có ràng buộc tài nguyên ví dụ như người nào tạo thì người đó mới đc phép xóa.
 và nên dùng authorize để thiết lập trong controller 
+
+thiet lap env
+
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=465
+MAIL_USERNAME=nhattruong.truongcong@gmail.com
+MAIL_PASSWORD=jghklihypayglvti
+MAIL_ENCRYPTION=ssl
+MAIL_FROM_ADDRESS=nhattruong.truongcong@gmail.com
+MAIL_FROM_NAME="${APP_NAME}"
